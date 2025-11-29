@@ -1,3 +1,4 @@
+# Core dependencies
 fastapi
 uvicorn[standard]
 sqlalchemy
@@ -6,7 +7,7 @@ psycopg2-binary
 python-multipart
 boto3
 botocore
-pydantic
+pydantic>=2.8.0
 python-dotenv
 httpx
 celery[redis]
@@ -19,3 +20,10 @@ pdfminer.six
 rapidfuzz
 passlib[bcrypt]
 redis[asyncio]
+motor==3.1.1
+beanie==2.0.1
+pydantic-settings>=0.2.1
+dnspython==2.4.2
+
+# NumPy compatibility for LangChain (Python 3.12+)
+numpy>=1.26.0,<2.0.0

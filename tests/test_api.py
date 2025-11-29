@@ -19,7 +19,7 @@ async def test_upload_resume_monkeypatched(monkeypatch):
         assert content  # ensure file content was forwarded
         return "fake-key-1234.pdf"
 
-    # monkeypatch the store_file in the routes module where it's imported
+    # monkeypatch the store_file in the API routes module where it's used
     import app.api.v1.routes as routes_mod
     monkeypatch.setattr(routes_mod, "store_file", fake_store_file)
 
