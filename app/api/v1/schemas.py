@@ -1,26 +1,40 @@
 # app/api/v1/schemas.py
-from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any, List
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, Dict, Any
 
-class UploadResumeResp(BaseModel):
-    resume_id: str
-    filename: str
-    storage_key: str
-    presigned_url: Optional[str] = None
+class JobCreate(BaseModel):
+    source_url: Optional[HttpUrl] = None
+    raw_text: Optional[str] = None
+    user_id: Optional[str] = None
 
-class SubmitJobResp(BaseModel):
+class JobResp(BaseModel):
+    id: str
+    source_url: Optional[str]
+    raw_text: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+class ResumeCreate(BaseModel):
+    user_id: Optional[str] = None
+    original_filename: Optional[str] = None
+    storage_key: Optional[str] = None
+
+class ResumeResp(BaseModel):
+    id: str
+    original_filename: Optional[str]
+    storage_key: Optional[str]
+    class Config:
+        orm_mode = True
+
+class AssessmentCreate(BaseModel):
     job_id: str
-
-class AssessPayload(BaseModel):
-    job_id: str
     resume_id: str
-    config: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    user_id: Optional[str] = None
 
-class AssessResp(BaseModel):
-    assessment_id: str
-    status: str
-
-class AssessmentResult(BaseModel):
-    assessment_id: str
+class AssessmentResp(BaseModel):
+    id: str
     score: Optional[float]
-    results: Optional[Dict[str, Any]] = None
+    results_json: Optional[Dict[str, Any]] = None
+    class Config:
+        orm_mode = True
