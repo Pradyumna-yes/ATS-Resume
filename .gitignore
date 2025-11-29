@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.local
+.env.dev
+.env.prod
+
+# Uploads
+uploads/
+
+# Byte-compiled / logs
+*.log
+
+# IDE folders
+.vscode/
+.idea/
+
+# pytest cache
+.pytest_cache/
+
+# Docker
+*.pid
