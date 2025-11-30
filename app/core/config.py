@@ -29,10 +29,24 @@ class Settings(BaseSettings):
 
     # LLM
     LLM_API_KEY: Optional[str] = None
+    # Adapter selection: 'mock' or 'http'
+    LLM_ADAPTER: str = "mock"
+    # HTTP adapter settings
+    LLM_HTTP_URL: Optional[AnyUrl] = None
+    LLM_TIMEOUT_SEC: int = 20
+    LLM_RETRIES: int = 2
+    LLM_BACKOFF_FACTOR: float = 0.5
+    # allow fallback to mock adapter when HTTP adapter fails
+    LLM_ALLOW_FALLBACK: bool = True
 
     # other
     DETERMINISTIC_SEED: int = 42
     ALLOWED_HOSTS: str = "*"
+    # Access token expiry (minutes) - environment values are often strings,
+    # pydantic will coerce to int. Add this explicit field so env vars such as
+    # ACCESS_TOKEN_EXPIRE_MINUTES or access_token_expire_minutes are accepted
+    # instead of being treated as unexpected extras.
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     # Pydantic v2 settings: read from .env file
     model_config = {

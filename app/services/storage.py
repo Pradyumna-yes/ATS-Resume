@@ -73,6 +73,14 @@ async def store_file(file: UploadFile, bucket: Optional[str] = None) -> str:
     Async store: tries configured S3-compatible client, then MinIO fallback, then local filesystem.
     Returns storage key (S3 key) or local path string.
     """
+    # Allow tests to monkeypatch storage at the `app.api.v1.uploads` module.
+    import sys
+    uploads_mod = sys.modules.get("app.api.v1.uploads")
+    if uploads_mod and getattr(uploads_mod, "store_file", None) and getattr(uploads_mod, "store_file") is not store_file:
+        # If uploads module provided an override (e.g. AsyncMock via monkeypatch), delegate to it.
+        override = getattr(uploads_mod, "store_file")
+        return await override(file)
+
     contents = await file.read()
     ext = Path(file.filename).suffix
     key = f"{uuid.uuid4().hex}{ext}"

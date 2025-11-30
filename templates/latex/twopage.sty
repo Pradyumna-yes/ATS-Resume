@@ -1,0 +1,36 @@
+% twopage.tex - two column / two-page template (still ATS-friendly: single column recommended, but template provided)
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{enumitem}
+\setlist{nosep}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+  {\LARGE {{name}} }\\
+  {{contact}} \\
+  \vspace{6pt}
+\end{center}
+
+\hrule
+\vspace{8pt}
+
+\section*{Professional Summary}
+{{summary}}
+
+\section*{Skills}
+\begin{itemize}
+{{skills_items}}
+\end{itemize}
+
+\section*{Experience}
+{{experience_entries}}
+
+\section*{Projects}
+{{projects}}
+
+\section*{Education}
+{{education}}
+
+\end{document}

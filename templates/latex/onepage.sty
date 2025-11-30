@@ -1,0 +1,33 @@
+% onepage.tex - minimal ATS-friendly LaTeX resume template
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{enumitem}
+\setlist{nosep}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+  {\LARGE {{name}} }\\
+  {{contact}} \\
+  \vspace{4pt}
+\end{center}
+
+\hrule
+\vspace{6pt}
+
+\section*{Summary}
+{{summary}}
+
+\section*{Skills}
+\begin{itemize}
+{{skills_items}}
+\end{itemize}
+
+\section*{Experience}
+{{experience_entries}}
+
+\section*{Education}
+{{education}}
+
+\end{document}
