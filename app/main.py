@@ -6,6 +6,13 @@ from app.api.v1.pipeline_routes import router as pipeline_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.uploads import router as uploads_router
 from app.api.v1.presign import router as presign_router
+# app/main.py snippet
+from app.api.v1.latex import router as latex_router
+from app.api.v1.assessments import router as assessments_router
+
+
+from app.api.v1.latex_tectonic import router as latex_tectonic_router
+
 
 
 # Try to import MongoDB init/close helpers. If motor/pymongo are not
@@ -32,6 +39,10 @@ app.include_router(api_router, prefix="/api/v1")
 app.include_router(auth_router)
 app.include_router(uploads_router, prefix="/api/v1")
 app.include_router(presign_router, prefix="/api/v1")
+
+app.include_router(latex_tectonic_router, prefix="/api/v1")
+app.include_router(latex_router, prefix="/api/v1")
+app.include_router(assessments_router, prefix="/api/v1")
 
 
 @app.on_event("startup")

@@ -21,6 +21,29 @@ from app.core.config import settings
 def event_loop():
     return asyncio.get_event_loop()
 
+@pytest.fixture(autouse=True)
+def mock_get_current_user(monkeypatch):
+    """Auto-mock auth for all tests so routes don't require real tokens."""
+    class TestUser:
+        def __init__(self):
+            self.id = "test-user-id"
+            self.email = "test@example.com"
+    
+    class TokenData:
+        def __init__(self):
+            self.sub = "test-user-id"
+    
+    test_user = TestUser()
+    token_data = TokenData()
+    
+    # Mock decode_access_token to accept any token in tests
+    from app.services import auth as auth_service
+    monkeypatch.setattr(auth_service, "decode_access_token", lambda token: token_data)
+    
+    # Mock get_current_user to return test user
+    from app.api.v1 import auth as auth_api
+    monkeypatch.setattr(auth_api, "get_current_user", lambda credentials=None: test_user)
+
 @pytest.fixture(scope="function")
 async def test_db():
     if not _MOTOR_AVAILABLE:

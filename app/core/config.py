@@ -13,6 +13,8 @@ class Settings(BaseSettings):
 
     # MongoDB
     MONGODB_URI: Optional[str] = "mongodb://localhost:27017/ats_resume"
+    # optional db name env var (some deployments use MONGODB_DB)
+    MONGODB_DB: Optional[str] = "ats_resume"
 
     # S3 / R2
     S3_PROVIDER: str = "cloudflare"

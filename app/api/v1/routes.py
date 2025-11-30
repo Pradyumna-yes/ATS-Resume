@@ -48,7 +48,3 @@ class AssessResp(BaseModel):
 async def assess(payload: AssessPayload):
     assessment_id = submit_assessment_task(payload.job_id, payload.resume_id, payload.config)
     return {"assessment_id": assessment_id, "status": "queued"}
-
-@router.get("/assessment/{id}")
-async def get_assessment(id: str):
-    return {"assessment_id": id, "status": "done", "results": {}}
