@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Presign Upload Demo</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;padding:20px}
+    label,input,button{display:block;margin:8px 0}
+    #log{white-space:pre-wrap;background:#f7f7f7;padding:12px;border:1px solid #eee;height:220px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h2>Presigned R2 Upload Demo</h2>
+
+  <label>JWT Token (paste here)</label>
+  <input id="token" type="text" placeholder="Bearer token here" style="width:100%"/>
+
+  <label>Select file to upload</label>
+  <input id="file" type="file" />
+
+  <button id="go">Upload (presign → PUT → confirm)</button>
+
+  <h3>Result / Log</h3>
+  <div id="log">Ready.</div>
+
+<script>
+const API_PREFIX = "http://127.0.0.1:8000/api/v1"; // change if your API is elsewhere
+
+function log(...args){
+  const out = args.map(a=> typeof a === "object" ? JSON.stringify(a, null, 2) : String(a)).join(" ");
+  document.getElementById("log").textContent += "\\n" + out;
+  document.getElementById("log").scrollTop = document.getElementById("log").scrollHeight;
+}
+
+async function doPresignAndUpload(token, file){
+  if(!file) throw new Error("No file selected");
+  const filename = file.name;
+
+  // Step 1: request presign
+  log("Requesting presign for", filename);
+  const presignResp = await fetch(API_PREFIX + "/presign", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token.replace(/^Bearer\\s*/i,"")
+    },
+    body: JSON.stringify({ filename })
+  });
+  if(!presignResp.ok) throw new Error("presign failed: " + presignResp.status + " " + await presignResp.text());
+  const presign = await presignResp.json();
+  log("Presign response:", presign);
+
+  // Step 2: PUT file to upload_url
+  log("Uploading file (PUT) to presigned URL...");
+  const putResp = await fetch(presign.upload_url, {
+    method: "PUT",
+    headers: { "Content-Type": file.type || "application/octet-stream" },
+    body: file
+  });
+  if(!putResp.ok){
+    throw new Error("Upload failed: " + putResp.status + " " + await putResp.text());
+  }
+  log("Upload successful (status " + putResp.status + ")");
+
+  // Step 3: confirm with backend
+  log("Confirming upload with backend...");
+  const confirmResp = await fetch(API_PREFIX + "/confirm-upload", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token.replace(/^Bearer\\s*/i,"")
+    },
+    body: JSON.stringify({ storage_key: presign.storage_key, original_filename: filename })
+  });
+  if(!confirmResp.ok) throw new Error("confirm failed: " + confirmResp.status + " " + await confirmResp.text());
+  const confirm = await confirmResp.json();
+  log("Confirm response:", confirm);
+
+  return { presign, confirm };
+}
+
+document.getElementById("go").addEventListener("click", async () => {
+  document.getElementById("log").textContent = "Running flow...";
+  try{
+    const token = document.getElementById("token").value.trim();
+    if(!token) { log("Provide JWT token (from /auth/login or /auth/signup)"); return; }
+    const fileInput = document.getElementById("file");
+    if(!fileInput.files.length){ log("Select a file first"); return; }
+    const file = fileInput.files[0];
+    const res = await doPresignAndUpload(token, file);
+    log("Flow completed successfully.");
+    log("Resume id from confirm:", res.confirm.resume_id || res.confirm.id || "(none)");
+  }catch(err){
+    log("ERROR:", err.message || err);
+  }
+});
+</script>
+</body>
+</html>
